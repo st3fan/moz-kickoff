@@ -1,8 +1,8 @@
 
-var MyModule = angular.module('MyModule', []);
+var app = angular.module('blockers', []);
 
 
-MyModule.factory('bugzillaService', function ($rootScope, $http)
+app.factory('bugzillaService', function ($rootScope, $http)
 {
     var sharedBugzillaService = {};
 
@@ -74,8 +74,7 @@ MyModule.factory('bugzillaService', function ($rootScope, $http)
     return sharedBugzillaService;
 });
 
-function SigninController($scope, $http, bugzillaService)
-{
+app.controller('SigninController', function ($scope, $http, bugzillaService) {
     $scope.bugzillaService = bugzillaService;
     $scope.loggedIn = false;
     $scope.error = undefined;
@@ -96,10 +95,9 @@ function SigninController($scope, $http, bugzillaService)
     $scope.$on("BugzillaLogoutSuccess", function() {
         $scope.loggedIn = false;
     });
-}
+});
 
-function PageController($scope, $http, bugzillaService)
-{
+app.controller('PageController', function ($scope, $http, bugzillaService) {
     $scope.bugzillaService = bugzillaService;
     $scope.loggedIn = false;
     $scope.loading = true;
@@ -129,9 +127,6 @@ function PageController($scope, $http, bugzillaService)
         // First we get the project review bugs
 
         var options = {
-            //classification:["Client Software", "Components", "Server Software", "Other", "Graveyard"],
-            //classification: "Other",
-            //id: "825971,825633,821870,821540,818692",
             component:"Project Review",
             product:"mozilla.org",
             status:"NEW",
@@ -303,4 +298,4 @@ function PageController($scope, $http, bugzillaService)
             }
         }
     };
-}
+});
