@@ -1,6 +1,19 @@
 
 var app = angular.module('blockers', []);
 
+app.factory('preferencesService', function ($rootScope) {
+    var sharedPreferencesService = {};
+
+    sharedPreferencesService.setUsername = function(username) {
+        localStorage.setItem("username", username);
+    };
+
+    sharedPreferencesService.getUsername = function() {
+        return localStorage.getItem("username");
+    };
+
+    return sharedPreferencesService;
+});
 
 app.factory('bugzillaService', function ($rootScope, $http)
 {
@@ -74,13 +87,19 @@ app.factory('bugzillaService', function ($rootScope, $http)
     return sharedBugzillaService;
 });
 
-app.controller('SigninController', function ($scope, $http, bugzillaService) {
+app.controller('SigninController', function ($scope, $http, bugzillaService, preferencesService) {
     $scope.bugzillaService = bugzillaService;
     $scope.loggedIn = false;
     $scope.error = undefined;
 
     $scope.username = "";
     $scope.password = "";
+    $scope.rememberMe = undefined;
+
+    if (preferencesService.getUsername() != "") {
+        $scope.username = preferencesService.getUsername();
+        $scope.rememberMe = true;
+    }
 
     $scope.signin = function()
     {
@@ -90,10 +109,21 @@ app.controller('SigninController', function ($scope, $http, bugzillaService) {
 
     $scope.$on("BugzillaLoginSuccess", function() {
         $scope.loggedIn = true;
+        if ($scope.rememberMe) {
+            console.log("REMEMBERING YOU!");
+            preferencesService.setUsername($scope.username);
+        } else {
+            preferencesService.setUsername("");
+            $scope.username = "";;
+        }
+        $scope.password = "";
     });
 
     $scope.$on("BugzillaLogoutSuccess", function() {
         $scope.loggedIn = false;
+//        if (preferencesService.getUsername()) {
+//            $scope.username = preferencesService.getUsername();
+//        }
     });
 });
 
